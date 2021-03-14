@@ -30,6 +30,17 @@ class CronModule(
     queueFactory.new("misk.cron.task-queue")
 }
 
+class FakeCronModule(
+  private val zoneId: ZoneId,
+  private val queueName: QueueName
+) : KAbstractModule() {
+  override fun configure() {
+    bind<ZoneId>().annotatedWith<ForMiskCron>().toInstance(zoneId)
+    bind<QueueName>().annotatedWith<ForMiskCron>().toInstance(queueName)
+    install(ServiceModule<CronService>())
+  }
+}
+
 @Qualifier
 @Target(AnnotationTarget.FIELD, AnnotationTarget.FUNCTION, AnnotationTarget.VALUE_PARAMETER)
 annotation class ForMiskCron

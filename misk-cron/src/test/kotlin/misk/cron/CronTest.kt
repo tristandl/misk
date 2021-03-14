@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.Clock
 import java.time.Duration
+import java.time.Instant
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,19 +36,19 @@ class CronTest {
   @Inject private lateinit var hourCron: HourCron
   @Inject private lateinit var throwsExceptionCron: ThrowsExceptionCron
 
+  private lateinit var lastRun: Instant
+
   private fun runCrons() {
-    cronManager.runReadyCrons()
+    val now = clock.instant()
+    cronManager.runReadyCrons(lastRun)
+    lastRun = now
     fakeJobQueue.handleJobs()
   }
 
   @Test
   fun basic() {
-    assertThat(minuteCron.counter).isEqualTo(0)
-    assertThat(hourCron.counter).isEqualTo(0)
-    assertThat(throwsExceptionCron.counter).isEqualTo(0)
+    lastRun = clock.instant()
 
-    // Should not be ready to run yet.
-    runCrons()
     assertThat(minuteCron.counter).isEqualTo(0)
     assertThat(hourCron.counter).isEqualTo(0)
     assertThat(throwsExceptionCron.counter).isEqualTo(0)

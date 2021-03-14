@@ -19,7 +19,7 @@ class CronTestingModule : KAbstractModule() {
 
       // Cron support requires registering the CronJobHandler and the CronRunnerModule.
       FakeJobHandlerModule.create<CronJobHandler>(queueName),
-      CronModule(ZoneId.of("America/Toronto"), queueName)
+      FakeCronModule(ZoneId.of("America/Toronto"), queueName)
     )
 
     applicationModules.forEach { module -> install(module) }
